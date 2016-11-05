@@ -12,11 +12,10 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.strtree.STRtree;
 
 import org.apache.spark.api.java.JavaPairRDD;
-
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
-
 import org.datasyslab.geospark.joinJudgement.PointByPolygonJudgement;
 import org.datasyslab.geospark.joinJudgement.PointByPolygonJudgementUsingIndex;
 import org.datasyslab.geospark.joinJudgement.PointByRectangleJudgement;
@@ -25,7 +24,6 @@ import org.datasyslab.geospark.joinJudgement.PolygonByPolygonJudgement;
 import org.datasyslab.geospark.joinJudgement.PolygonByPolygonJudgementUsingIndex;
 import org.datasyslab.geospark.joinJudgement.RectangleByRectangleJudgement;
 import org.datasyslab.geospark.joinJudgement.RectangleByRectangleJudgementUsingIndex;
-
 import org.datasyslab.geospark.spatialRDD.PointRDD;
 import org.datasyslab.geospark.spatialRDD.PolygonRDD;
 import org.datasyslab.geospark.spatialRDD.RectangleRDD;
@@ -153,7 +151,14 @@ public class JoinQuery implements Serializable{
     public JavaPairRDD<Envelope, HashSet<Point>> SpatialJoinQuery(PointRDD pointRDD,RectangleRDD rectangleRDD) {
         //todo: Add logic, if this is cached, no need to calculate it again.
 
-        if(pointRDD.gridPointRDD == null) {
+    	JavaRDD<Envelope> rectangleList = rectangleRDD.rawRectangleRDD;
+    	JavaRDD<Point> pointList = pointRDD.rawPointRDD;
+    	for(int i=0; i<rectangleList.count(); i++){
+    		for(int j=0; j<pointList.count();j++){
+    		
+    		}
+    	}
+    	if(pointRDD.gridPointRDD == null) {
             throw new NullPointerException("Need to do spatial partitioning first, gridedSRDD is null");
         }
         
