@@ -117,6 +117,27 @@ public class JoinQuery implements Serializable{
 		this.sc=sc;
 	}
 
+	public static JavaPairRDD<Envelope, HashSet<Point>> SpatialJoinQueryUsingCartesianProduct(JavaSparkContext sc,PointRDD pointRDD,RectangleRDD rectangleRDD){
+    	
+    	List<Envelope> rectangleRDDList = rectangleRDD.getRawRectangleRDD().collect();
+    	List<scala.Tuple2<Envelope, HashSet<Point>>> tempList = new ArrayList<>();
+    
+    	for(Envelope envelope: rectangleRDDList){
+    		PointRDD tempResult = RangeQuery.SpatialRangeQuery(pointRDD, envelope, 0);
+    		if(tempResult.getRawPointRDD().count() > 0){
+    			HashSet<Point> hashSetPoints = new HashSet<Point>();
+    			for(Point point: tempResult.getRawPointRDD().collect()){
+    				hashSetPoints.add(point);
+    			}
+    			Tuple2<Envelope,HashSet<Point>> tempTuple = new Tuple2<Envelope, HashSet<Point>>(envelope, hashSetPoints);
+    			tempList.add(tempTuple);
+    		}
+    	}
+    	
+    	JavaPairRDD<Envelope,HashSet<Point>> result = sc.parallelizePairs(tempList);
+    	
+    	return result;
+    }
     /**
      * Spatial Join Query between a RectangleRDD and a PointRDD using index nested loop. The PointRDD should be indexed in advance.
      * @param pointRDD Indexed PointRDD
